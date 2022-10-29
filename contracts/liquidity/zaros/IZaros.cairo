@@ -1,5 +1,7 @@
 %lang starknet
 
+from contracts.utils.constants.library import address
+
 @contract_interface
 namespace IZaros {
     func debtTotalSupply() -> (res: felt) {
@@ -14,13 +16,13 @@ namespace IZaros {
     func spotExchange() -> (res: felt) {
     }
 
-    func debtShares(user: felt) -> (res: felt) {
+    func debtShares(user: address) -> (res: felt) {
     }
 
-    func mintShares(amount: felt) -> (success: felt) {
+    func mintShares(user: address, amount: felt) -> (success: felt) {
     }
 
-    func burnShares(amount: felt) -> (success: felt) {
+    func burnShares(user: address, amount: felt) -> (success: felt) {
     }
 
     func updateFees(fee: felt) -> (success: felt) {

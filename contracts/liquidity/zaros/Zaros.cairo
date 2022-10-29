@@ -4,6 +4,7 @@
 from starkware.cairo.common.bool import TRUE
 from starkware.cairo.common.uint256 import Uint256
 from contracts.liquidity.zaros.library import Zaros
+from contracts.utils.constants import address
 
 @view
 func debtTotalSupply{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
@@ -31,14 +32,14 @@ func protocolDebtUsd{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
 
 @view
 func spotExchange{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-    res: felt
+    res: address
 ) {
     let (res) = Zaros.spot_exchange();
     return (res,);
 }
 
 @view
-func debtShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(user: felt) -> (
+func debtShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(user: address) -> (
     res: Uint256
 ) {
     let (res: Uint256) = Zaros.debt_shares(user);
@@ -48,7 +49,7 @@ func debtShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 
 @external
 func mintShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    amount: Uint256
+    user: address, amount: Uint256
 ) -> (success: felt) {
     Zaros.mint_shares(amount);
 
@@ -57,7 +58,7 @@ func mintShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 
 @external
 func burnShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    amount: Uint256
+    user: address, amount: Uint256
 ) -> (success: felt) {
     Zaros.burn_shares(amount);
 
