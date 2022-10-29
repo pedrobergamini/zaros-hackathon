@@ -37,4 +37,12 @@ namespace Zaros {
         user: felt
     ) -> (res: felt) {
     }
+
+    // Write functions
+
+    // only registered exchanges
+    func mint_shares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        amount: felt
+    ) {
+    }
 }
