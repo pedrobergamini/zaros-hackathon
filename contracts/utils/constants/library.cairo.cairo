@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 %lang starknet
 
 // / @dev Empiric deployed oracle address
