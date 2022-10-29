@@ -6,6 +6,8 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.uint256 import Uint256
 from contracts.zaros.IZaros import zToken, Collateral
 from contracts.zaros.library import Zaros
+from contracts.oracle.eth.IETHOracle import IETHOracle
+from openzeppelin.access.ownable.library import Ownable
 
 using address = felt;
 using bool = felt;
@@ -13,22 +15,17 @@ using bool = felt;
 @constructor
 func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     spot_exchange: address,
-    vaults_manager: address,
     zeth: zToken,
     eth_oracle: address,
     zusd: address,
     collateral_tokens_len: felt,
     collateral_tokens: Collateral*,
+    owner: address,
 ) {
-    Zaros.initialize(
-        spot_exchange,
-        vaults_manager,
-        zeth,
-        eth_oracle,
-        zusd,
-        collateral_tokens_len,
-        collateral_tokens,
+    Zaros.initializer(
+        spot_exchange, zeth, eth_oracle, zusd, collateral_tokens_len, collateral_tokens
     );
+    Ownable.initializer(owner);
     return ();
 }
 
@@ -89,6 +86,16 @@ func zusdDebtFor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     let (res: Uint256) = Zaros.zusd_debt_for(user);
 
     return (res,);
+}
+
+@external
+func setVaultsManager{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    vaults_manager: address
+) {
+    Ownable.assert_only_owner();
+    Zaros.set_vaults_manager(vaults_manager);
+
+    return ();
 }
 
 @external

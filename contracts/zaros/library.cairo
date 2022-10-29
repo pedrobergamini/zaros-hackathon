@@ -57,22 +57,15 @@ func Zaros_collateral_tokens(index: felt) -> (res: Collateral) {
 }
 
 namespace Zaros {
-    func initialize{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    func initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         spot_exchange: address,
-        vaults_manager: address,
         zeth: zToken,
         eth_oracle: address,
         zusd: address,
         collateral_tokens_len: felt,
         collateral_tokens: Collateral*,
     ) {
-        with_attr error_message("Zaros: missing initialize input") {
-            assert_not_zero(spot_exchange);
-            assert_not_zero(vaults_manager);
-        }
-
         Zaros_spot_exchange.write(spot_exchange);
-        Zaros_vaults_manager.write(vaults_manager);
         Zaros_ztokens.write(0, zeth);
         Zaros_eth_oracle.write(eth_oracle);
         Zaros_zusd.write(zusd);
@@ -84,6 +77,14 @@ namespace Zaros {
 
     func zusd{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (res: address) {
         let (res: address) = Zaros_zusd.read();
+
+        return (res,);
+    }
+
+    func eth_oracle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+        res: address
+    ) {
+        let (res: address) = Zaros_eth_oracle.read();
 
         return (res,);
     }
@@ -200,6 +201,13 @@ namespace Zaros {
     }
 
     // Write functions
+    func set_vaults_manager{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        vaults_manager: address
+    ) {
+        Zaros_vaults_manager.write(vaults_manager);
+
+        return ();
+    }
 
     func mint_shares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         user: address, amount: Uint256

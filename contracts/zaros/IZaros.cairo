@@ -16,6 +16,12 @@ struct Collateral {
 
 @contract_interface
 namespace IZaros {
+    func zusd() -> (res: address) {
+    }
+
+    func eth_oracle() -> (res: address) {
+    }
+
     func debtTotalSupply() -> (res: felt) {
     }
 
@@ -31,10 +37,19 @@ namespace IZaros {
     func debtShares(user: address) -> (res: felt) {
     }
 
+    func ztokens(index: felt) -> (res: address) {
+    }
+
+    func collateralTokens(index: felt) -> (res: address) {
+    }
+
     func accumulatedFeesFor(user: address) -> (res: felt) {
     }
 
     func zusdDebtFor(user: address) -> (res: felt) {
+    }
+
+    func setVaultsManager(vaults_manager: address) {
     }
 
     func mintShares(user: address, amount: felt) -> (success: bool) {
