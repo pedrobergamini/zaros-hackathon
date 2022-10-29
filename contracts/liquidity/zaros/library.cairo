@@ -5,8 +5,22 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.uint256 import Uint256
 from starkware.starknet.common.syscalls import get_caller_address
 from openzeppelin.token.erc20.library import ERC20
+from openzeppelin.security.safemath.library import SafeUint256
 
 using address = felt;
+
+// Events
+@event
+func LogMintShare(user: address, amount: Uint256) {
+}
+
+@event
+func LogBurnShare(user: address, amount: Uint256) {
+}
+
+@event
+func LogUpdateFees(fee: Uint256, accumulated_fees: Uint256) {
+}
 
 // Storage vars
 @storage_var
@@ -79,6 +93,8 @@ namespace Zaros {
         _only_vaults_manager(caller);
         ERC20._mint(user, amount);
 
+        LogMintShare.emit(user, amount);
+
         return ();
     }
 
@@ -89,6 +105,8 @@ namespace Zaros {
         _only_vaults_manager(caller);
         ERC20._burn(user, amount);
 
+        LogBurnShare.emit(user, amount);
+
         return ();
     }
 
@@ -97,7 +115,11 @@ namespace Zaros {
     ) {
         let (caller: address) = get_caller_address();
         _only_spot_exchange(caller);
+        let (accumulated_fees_current: Uint256) = Zaros_accumulated_fees.read();
+        let (accumulated_fees_updated: Uint256) = SafeUint256.add(accumulated_fees_current, fee);
+        Zaros_accumulated_fees.write(accumulated_fees_updated);
 
+        LogUpdateFees.emit(fee, accumulated_fees_updated);
         return ();
     }
 
