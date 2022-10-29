@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 %lang starknet
 
 from starkware.cairo.common.builtins import HashBuiltin
