@@ -9,7 +9,7 @@ namespace IZaros {
     func debtTotalSupply() -> (res: felt) {
     }
 
-    func accumulatedFees() -> (res: felt) {
+    func totalAccumulatedFees() -> (res: felt) {
     }
 
     func protocolDebtUsd() -> (res: felt) {
@@ -19,6 +19,9 @@ namespace IZaros {
     }
 
     func debtShares(user: address) -> (res: felt) {
+    }
+
+    func accumulatedFeesFor(user: address) -> (res: felt) {
     }
 
     func mintShares(user: address, amount: felt) -> (success: felt) {

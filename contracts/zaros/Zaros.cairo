@@ -4,7 +4,7 @@
 from starkware.cairo.common.bool import TRUE
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.uint256 import Uint256
-from contracts.liquidity.zaros.library import Zaros
+from contracts.zaros.library import Zaros
 
 using address = felt;
 
@@ -17,10 +17,10 @@ func debtTotalSupply{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
 }
 
 @view
-func accumulatedFees{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+func totalAccumulatedFees{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
     res: Uint256
 ) {
-    let (res: Uint256) = Zaros.accumulated_fees();
+    let (res: Uint256) = Zaros.total_accumulated_fees();
     return (res,);
 }
 
@@ -45,6 +45,15 @@ func debtShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
     res: Uint256
 ) {
     let (res: Uint256) = Zaros.debt_shares(user);
+
+    return (res,);
+}
+
+@view
+func accumulatedFeesFor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    user: address
+) -> (res: Uint256) {
+    let (res: Uint256) = Zaros.accumulated_fees_for(user);
 
     return (res,);
 }

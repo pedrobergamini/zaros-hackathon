@@ -7,6 +7,7 @@ from starkware.cairo.common.uint256 import Uint256
 from starkware.starknet.common.syscalls import get_caller_address
 from openzeppelin.token.erc20.library import ERC20
 from openzeppelin.security.safemath.library import SafeUint256
+from contracts.utils.constants.library import Constants
 
 using address = felt;
 
@@ -25,7 +26,7 @@ func LogUpdateFees(fee: Uint256, accumulated_fees: Uint256) {
 
 // Storage vars
 @storage_var
-func Zaros_accumulated_fees() -> (res: Uint256) {
+func Zaros_total_accumulated_fees() -> (res: Uint256) {
 }
 
 @storage_var
@@ -58,12 +59,33 @@ namespace Zaros {
         return (res,);
     }
 
-    func accumulated_fees{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-        res: Uint256
-    ) {
-        let (res: Uint256) = Zaros_accumulated_fees.read();
+    func total_accumulated_fees{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        ) -> (res: Uint256) {
+        let (res: Uint256) = Zaros_total_accumulated_fees.read();
 
         return (res,);
+    }
+
+    func accumulated_fees_for{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        user: address
+    ) -> (res: Uint256) {
+        alloc_locals;
+        let (total_accumulated_fees: Uint256) = Zaros.total_accumulated_fees();
+        let (total_debt_shares: Uint256) = Zaros.debt_total_supply();
+        let (user_debt_shares: Uint256) = Zaros.debt_shares(user);
+        let (total_debt_shares_denorm: Uint256) = SafeUint256.mul(
+            total_debt_shares, Uint256(Constants.BASE_MULTIPLIER, 0)
+        );
+        let (fee_per_share_denorm: Uint256, _) = SafeUint256.div_rem(
+            total_debt_shares_denorm, total_accumulated_fees
+        );
+
+        let (fee_for_user_denorm) = SafeUint256.mul(fee_per_share_denorm, user_debt_shares);
+        let (fee_for_user, _) = SafeUint256.div_rem(
+            fee_for_user_denorm, Uint256(Constants.BASE_MULTIPLIER, 0)
+        );
+
+        return (fee_for_user,);
     }
 
     func protocol_debt_usd{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
@@ -127,9 +149,9 @@ namespace Zaros {
     ) {
         let (caller: address) = get_caller_address();
         _only_spot_exchange(caller);
-        let (accumulated_fees_current: Uint256) = Zaros_accumulated_fees.read();
+        let (accumulated_fees_current: Uint256) = Zaros_total_accumulated_fees.read();
         let (accumulated_fees_updated: Uint256) = SafeUint256.add(accumulated_fees_current, fee);
-        Zaros_accumulated_fees.write(accumulated_fees_updated);
+        Zaros_total_accumulated_fees.write(accumulated_fees_updated);
 
         LogUpdateFees.emit(fee, accumulated_fees_updated);
         return ();
