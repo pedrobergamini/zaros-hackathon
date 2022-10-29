@@ -2,23 +2,18 @@
 
 @contract_interface
 namespace IZaros {
-    func debtTotalSupply{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-        res: felt
-    ) {
+    func debtTotalSupply() -> (res: felt) {
     }
 
-    func accumulatedFees{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-        res: felt
-    ) {
+    func accumulatedFees() -> (res: felt) {
     }
 
-    func protocolDebtUsd{syscall_ptr: felt, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-        res: felt
-    ) {
+    func protocolDebtUsd() -> (res: felt) {
     }
 
-    func debtShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-        user: felt
-    ) -> (res: felt) {
+    func spotExchange() -> (res: felt) {
+    }
+
+    func debtShares(user: felt) -> (res: felt) {
     }
 }

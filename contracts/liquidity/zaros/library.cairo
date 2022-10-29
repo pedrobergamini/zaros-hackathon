@@ -14,6 +14,10 @@ namespace Zaros {
     }
 
     @storage_var
+    func Zaros_spot_exchange() -> (res: felt) {
+    }
+
+    @storage_var
     func Zaros_debt_shares(user: felt) -> (res: felt) {
     }
 
@@ -34,6 +38,11 @@ namespace Zaros {
     ) {
     }
 
+    func spot_exchange{syscall_ptr: felt, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+        res: felt
+    ) {
+    }
+
     func debt_shares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         user: felt
     ) -> (res: felt) {
@@ -45,5 +54,15 @@ namespace Zaros {
     func mint_shares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         amount: felt
     ) {
+    }
+
+    // only registered exchanges
+    func burn_shares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        amount: felt
+    ) {
+    }
+
+    // only registered exchanges
+    func update_fees{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(fee: felt) {
     }
 }
