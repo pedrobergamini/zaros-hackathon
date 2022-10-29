@@ -2,6 +2,7 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
+from starkware.cairo.common.math import assert_not_zero
 from starkware.cairo.common.uint256 import Uint256
 from starkware.starknet.common.syscalls import get_caller_address
 from openzeppelin.token.erc20.library import ERC20
@@ -36,6 +37,17 @@ func Zaros_vaults_manager() -> (res: address) {
 }
 
 namespace Zaros {
+    func initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        spot_exchange: address, vaults_manager: address
+    ) {
+        with_attr error_message("Zaros: missing initialize input") {
+            assert_not_zero(spot_exchange);
+            assert_not_zero(vaults_manager);
+        }
+
+        Zaros_spot_exchange.write(spot_exchange);
+        Zaros_vaults_manager.write(vaults_manager);
+    }
     // Read functions
 
     func debt_total_supply{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
