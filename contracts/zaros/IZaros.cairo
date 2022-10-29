@@ -1,8 +1,18 @@
+// SPDX-License-Identifier: MIT
 %lang starknet
 
-from contracts.utils.constants.library import address
-
 using address = felt;
+using bool = felt;
+
+struct zToken {
+    token: address,
+    price_feed: address,
+}
+
+struct Collateral {
+    token: address,
+    is_usd: bool,
+}
 
 @contract_interface
 namespace IZaros {
@@ -27,12 +37,12 @@ namespace IZaros {
     func zusdDebtFor(user: address) -> (res: felt) {
     }
 
-    func mintShares(user: address, amount: felt) -> (success: felt) {
+    func mintShares(user: address, amount: felt) -> (success: bool) {
     }
 
-    func burnShares(user: address, amount: felt) -> (success: felt) {
+    func burnShares(user: address, amount: felt) -> (success: bool) {
     }
 
-    func updateFees(fee: felt) -> (success: felt) {
+    func updateFees(fee: felt) -> (success: bool) {
     }
 }

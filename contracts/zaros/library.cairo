@@ -7,7 +7,10 @@ from starkware.cairo.common.uint256 import Uint256
 from starkware.starknet.common.syscalls import get_caller_address
 from openzeppelin.token.erc20.library import ERC20
 from openzeppelin.security.safemath.library import SafeUint256
+from contracts.utils.IERC20 import IERC20
 from contracts.utils.constants.library import Constants
+from contracts.zaros.IZaros import zToken, Collateral
+from contracts.oracle.eth.IETHOracle import IETHOracle
 
 using address = felt;
 
@@ -26,6 +29,14 @@ func LogUpdateFees(fee: Uint256, accumulated_fees: Uint256) {
 
 // Storage vars
 @storage_var
+func Zaros_zusd() -> (res: address) {
+}
+
+@storage_var
+func Zaros_eth_oracle() -> (res: address) {
+}
+
+@storage_var
 func Zaros_total_accumulated_fees() -> (res: Uint256) {
 }
 
@@ -37,9 +48,23 @@ func Zaros_spot_exchange() -> (res: address) {
 func Zaros_vaults_manager() -> (res: address) {
 }
 
+@storage_var
+func Zaros_ztokens(index: felt) -> (res: zToken) {
+}
+
+@storage_var
+func Zaros_collateral_tokens(index: felt) -> (res: Collateral) {
+}
+
 namespace Zaros {
     func initialize{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-        spot_exchange: address, vaults_manager: address
+        spot_exchange: address,
+        vaults_manager: address,
+        zeth: zToken,
+        eth_oracle: address,
+        zusd: address,
+        collateral_tokens_len: felt,
+        collateral_tokens: Collateral*,
     ) {
         with_attr error_message("Zaros: missing initialize input") {
             assert_not_zero(spot_exchange);
@@ -48,10 +73,26 @@ namespace Zaros {
 
         Zaros_spot_exchange.write(spot_exchange);
         Zaros_vaults_manager.write(vaults_manager);
+        Zaros_ztokens.write(0, zeth);
+        Zaros_eth_oracle.write(eth_oracle);
+        Zaros_zusd.write(zusd);
+        _loop_store_colleteral(collateral_tokens_len, collateral_tokens);
 
         return ();
     }
     // Read functions
+
+    func zusd{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (res: address) {
+        let (res: address) = Zaros_zusd.read();
+
+        return (res,);
+    }
+
+    func zeth{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (res: zToken) {
+        let (res: zToken) = Zaros_ztokens.read(0);
+
+        return (res,);
+    }
 
     func debt_total_supply{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
         res: Uint256
@@ -119,7 +160,19 @@ namespace Zaros {
     func protocol_debt_usd{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
         res: Uint256
     ) {
-        return (Uint256(0, 0),);
+        alloc_locals;
+        let (zusd: address) = Zaros_zusd.read();
+        let (zeth_struct: zToken) = Zaros_ztokens.read(0);
+        let zeth: address = zeth_struct.token;
+        let (total_zusd_minted: Uint256) = IERC20.totalSupply(contract_address=zusd);
+        let (total_zeth_minted: Uint256) = IERC20.totalSupply(contract_address=zeth);
+        let (eth_oracle: address) = Zaros_eth_oracle.read();
+        let (zeth_usd_value: Uint256) = IETHOracle.quote(
+            contract_address=eth_oracle, eth_amount=total_zeth_minted
+        );
+        let (res: Uint256) = SafeUint256.add(zeth_usd_value, total_zusd_minted);
+
+        return (res,);
     }
 
     func spot_exchange{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
@@ -205,5 +258,24 @@ namespace Zaros {
         }
 
         return ();
+    }
+
+    func _verify_caller(caller: address) {
+        with_attr error_message("Zaros: caller is address 0") {
+            assert_not_zero(caller);
+        }
+
+        return ();
+    }
+
+    func _loop_store_colleteral{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        collateral_tokens_len: felt, collateral_tokens: Collateral*
+    ) {
+        if (collateral_tokens_len == 0) {
+            return ();
+        }
+        let new_len = collateral_tokens_len - 1;
+        Zaros_collateral_tokens.write(new_len, collateral_tokens[new_len]);
+        return _loop_store_colleteral(new_len, collateral_tokens);
     }
 }

@@ -4,15 +4,31 @@
 from starkware.cairo.common.bool import TRUE
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.uint256 import Uint256
+from contracts.zaros.IZaros import zToken, Collateral
 from contracts.zaros.library import Zaros
 
 using address = felt;
+using bool = felt;
 
 @constructor
 func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    spot_exchange: address, vaults_manager: address
+    spot_exchange: address,
+    vaults_manager: address,
+    zeth: zToken,
+    eth_oracle: address,
+    zusd: address,
+    collateral_tokens_len: felt,
+    collateral_tokens: Collateral*,
 ) {
-    Zaros.initialize(spot_exchange, vaults_manager);
+    Zaros.initialize(
+        spot_exchange,
+        vaults_manager,
+        zeth,
+        eth_oracle,
+        zusd,
+        collateral_tokens_len,
+        collateral_tokens,
+    );
     return ();
 }
 
@@ -78,7 +94,7 @@ func zusdDebtFor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 @external
 func mintShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     user: address, amount: Uint256
-) -> (success: felt) {
+) -> (success: bool) {
     Zaros.mint_shares(user, amount);
 
     return (TRUE,);
@@ -87,7 +103,7 @@ func mintShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 @external
 func burnShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     user: address, amount: Uint256
-) -> (success: felt) {
+) -> (success: bool) {
     Zaros.burn_shares(user, amount);
 
     return (TRUE,);
@@ -95,7 +111,7 @@ func burnShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 
 @external
 func updateFees{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(fee: Uint256) -> (
-    success: felt
+    success: bool
 ) {
     Zaros.update_fees(fee);
 
