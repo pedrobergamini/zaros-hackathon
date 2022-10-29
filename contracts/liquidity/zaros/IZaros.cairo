@@ -16,4 +16,13 @@ namespace IZaros {
 
     func debtShares(user: felt) -> (res: felt) {
     }
+
+    func mintShares(amount: felt) -> (success: felt) {
+    }
+
+    func burnShares(amount: felt) -> (success: felt) {
+    }
+
+    func updateFees(fee: felt) -> (success: felt) {
+    }
 }
