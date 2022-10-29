@@ -15,3 +15,4 @@ cairo-path = [
 ]
 
 ["protostar.contracts"]
+Zaros=["contracts/liquidity/zaros/Zaros.cairo"]

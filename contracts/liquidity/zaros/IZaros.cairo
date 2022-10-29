@@ -2,6 +2,8 @@
 
 from contracts.utils.constants.library import address
 
+using address = felt;
+
 @contract_interface
 namespace IZaros {
     func debtTotalSupply() -> (res: felt) {

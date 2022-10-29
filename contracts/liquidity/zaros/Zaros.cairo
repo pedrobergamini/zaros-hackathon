@@ -2,9 +2,11 @@
 %lang starknet
 
 from starkware.cairo.common.bool import TRUE
+from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.uint256 import Uint256
 from contracts.liquidity.zaros.library import Zaros
-from contracts.utils.constants import address
+
+using address = felt;
 
 @view
 func debtTotalSupply{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
@@ -34,7 +36,7 @@ func protocolDebtUsd{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
 func spotExchange{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
     res: address
 ) {
-    let (res) = Zaros.spot_exchange();
+    let (res: address) = Zaros.spot_exchange();
     return (res,);
 }
 
@@ -51,7 +53,7 @@ func debtShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 func mintShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     user: address, amount: Uint256
 ) -> (success: felt) {
-    Zaros.mint_shares(amount);
+    Zaros.mint_shares(user, amount);
 
     return (TRUE,);
 }
@@ -60,7 +62,7 @@ func mintShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 func burnShares{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     user: address, amount: Uint256
 ) -> (success: felt) {
-    Zaros.burn_shares(amount);
+    Zaros.burn_shares(user, amount);
 
     return (TRUE,);
 }
