@@ -16,3 +16,4 @@ cairo-path = [
 
 ["protostar.contracts"]
 Zaros=["contracts/zaros/Zaros.cairo"]
+ERC20=["lib/cairo_contracts/src/openzeppelin/token/erc20/presets/ERC20.cairo"]

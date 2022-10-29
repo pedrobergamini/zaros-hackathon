@@ -38,7 +38,7 @@ func Zaros_vaults_manager() -> (res: address) {
 }
 
 namespace Zaros {
-    func initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    func initialize{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         spot_exchange: address, vaults_manager: address
     ) {
         with_attr error_message("Zaros: missing initialize input") {
@@ -48,6 +48,8 @@ namespace Zaros {
 
         Zaros_spot_exchange.write(spot_exchange);
         Zaros_vaults_manager.write(vaults_manager);
+
+        return ();
     }
     // Read functions
 
@@ -80,12 +82,38 @@ namespace Zaros {
             total_debt_shares_denorm, total_accumulated_fees
         );
 
-        let (fee_for_user_denorm) = SafeUint256.mul(fee_per_share_denorm, user_debt_shares);
-        let (fee_for_user, _) = SafeUint256.div_rem(
+        let (fee_for_user_denorm: Uint256) = SafeUint256.mul(
+            fee_per_share_denorm, user_debt_shares
+        );
+        let (fee_for_user: Uint256, _) = SafeUint256.div_rem(
             fee_for_user_denorm, Uint256(Constants.BASE_MULTIPLIER, 0)
         );
 
         return (fee_for_user,);
+    }
+
+    func zusd_debt_for{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        user: address
+    ) -> (res: Uint256) {
+        alloc_locals;
+        let (protocol_debt_usd: Uint256) = Zaros.protocol_debt_usd();
+        let (total_debt_shares: Uint256) = Zaros.debt_total_supply();
+        let (user_debt_shares: Uint256) = Zaros.debt_shares(user);
+        let (total_debt_shares_denorm: Uint256) = SafeUint256.mul(
+            total_debt_shares, Uint256(Constants.BASE_MULTIPLIER, 0)
+        );
+        let (debt_per_share_denorm: Uint256, _) = SafeUint256.div_rem(
+            total_debt_shares_denorm, protocol_debt_usd
+        );
+
+        let (debt_for_user_denorm: Uint256) = SafeUint256.mul(
+            debt_per_share_denorm, user_debt_shares
+        );
+        let (zusd_debt_for_user: Uint256, _) = SafeUint256.div_rem(
+            debt_for_user_denorm, Uint256(Constants.BASE_MULTIPLIER, 0)
+        );
+
+        return (zusd_debt_for_user,);
     }
 
     func protocol_debt_usd{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (

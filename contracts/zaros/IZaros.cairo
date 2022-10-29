@@ -24,6 +24,9 @@ namespace IZaros {
     func accumulatedFeesFor(user: address) -> (res: felt) {
     }
 
+    func zusdDebtFor(user: address) -> (res: felt) {
+    }
+
     func mintShares(user: address, amount: felt) -> (success: felt) {
     }
 

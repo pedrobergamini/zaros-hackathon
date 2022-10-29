@@ -8,6 +8,14 @@ from contracts.zaros.library import Zaros
 
 using address = felt;
 
+@constructor
+func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    spot_exchange: address, vaults_manager: address
+) {
+    Zaros.initialize(spot_exchange, vaults_manager);
+    return ();
+}
+
 @view
 func debtTotalSupply{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
     res: Uint256
@@ -54,6 +62,15 @@ func accumulatedFeesFor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_ch
     user: address
 ) -> (res: Uint256) {
     let (res: Uint256) = Zaros.accumulated_fees_for(user);
+
+    return (res,);
+}
+
+@view
+func zusdDebtFor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    user: address
+) -> (res: Uint256) {
+    let (res: Uint256) = Zaros.zusd_debt_for(user);
 
     return (res,);
 }
