@@ -27,6 +27,14 @@ func VaultsManager_vaults(user: address) -> (res: Vault) {
 }
 
 namespace VaultsManager {
+    func initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        zaros: address
+    ) {
+        VaultsManager_zaros.write(zaros);
+
+        return ();
+    }
+
     func create_vault{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
         eth_amount: Uint256, dai_amount: Uint256, usdc_amount: Uint256, zusd_to_mint: Uint256
     ) {
@@ -61,6 +69,14 @@ namespace VaultsManager {
         IERC20.mint(contract_address=zusd, to=caller, amount=zusd_to_mint);
 
         return ();
+    }
+
+    func read_vault{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+        user: address
+    ) -> (res: Vault) {
+        let (res: Vault) = VaultsManager_vaults.read(user);
+
+        return (res,);
     }
 
     func _verify_caller(caller: address) {

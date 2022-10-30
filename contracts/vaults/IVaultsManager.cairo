@@ -16,13 +16,10 @@ struct Vault {
 @contract_interface
 namespace IVaultsManager {
     func createVault(
-        eth: address,
-        dai: address,
-        usdc: address,
-        eth_amount: Uint256,
-        dai_amount: Uint256,
-        usdc_amount: Uint256,
-        zusd_to_mint: Uint256,
+        eth_amount: Uint256, dai_amount: Uint256, usdc_amount: Uint256, zusd_to_mint: Uint256
     ) -> (success: bool) {
+    }
+
+    func readVault(user: address) -> (res: Vault) {
     }
 }

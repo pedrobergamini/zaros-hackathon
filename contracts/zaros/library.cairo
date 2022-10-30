@@ -53,7 +53,7 @@ func Zaros_ztokens(index: felt) -> (res: zToken) {
 }
 
 @storage_var
-func Zaros_collateral_tokens(index: felt) -> (res: Collateral) {
+func Zaros_collateral_tokens(index: felt) -> (res: address) {
 }
 
 namespace Zaros {
@@ -62,14 +62,17 @@ namespace Zaros {
         zeth: zToken,
         eth_oracle: address,
         zusd: address,
-        collateral_tokens_len: felt,
-        collateral_tokens: Collateral*,
+        eth: address,
+        dai: address,
+        usdc: address,
     ) {
         Zaros_spot_exchange.write(spot_exchange);
         Zaros_ztokens.write(0, zeth);
         Zaros_eth_oracle.write(eth_oracle);
         Zaros_zusd.write(zusd);
-        _loop_store_colleteral(collateral_tokens_len, collateral_tokens);
+        Zaros_collateral_tokens.write(0, eth);
+        Zaros_collateral_tokens.write(1, dai);
+        Zaros_collateral_tokens.write(2, usdc);
 
         return ();
     }
@@ -274,16 +277,5 @@ namespace Zaros {
         }
 
         return ();
-    }
-
-    func _loop_store_colleteral{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-        collateral_tokens_len: felt, collateral_tokens: Collateral*
-    ) {
-        if (collateral_tokens_len == 0) {
-            return ();
-        }
-        let new_len = collateral_tokens_len - 1;
-        Zaros_collateral_tokens.write(new_len, collateral_tokens[new_len]);
-        return _loop_store_colleteral(new_len, collateral_tokens);
     }
 }

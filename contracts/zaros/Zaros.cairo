@@ -18,13 +18,12 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     zeth: zToken,
     eth_oracle: address,
     zusd: address,
-    collateral_tokens_len: felt,
-    collateral_tokens: Collateral*,
+    eth: address,
+    dai: address,
+    usdc: address,
     owner: address,
 ) {
-    Zaros.initializer(
-        spot_exchange, zeth, eth_oracle, zusd, collateral_tokens_len, collateral_tokens
-    );
+    Zaros.initializer(spot_exchange, zeth, eth_oracle, zusd, eth, dai, usdc);
     Ownable.initializer(owner);
     return ();
 }
