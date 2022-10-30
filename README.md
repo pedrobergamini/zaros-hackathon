@@ -17,3 +17,9 @@ So system modules and products built on top of the protocol aim to deliver to us
 The protocol is composed by a set of smart contracts divided into different system modules:
 
 # <img src="architecture.png" alt="Architecture Overview">
+
+# Addresses
+
+- Zaros: https://goerli-2.voyager.online/contract/0x0265e292c3209cf0bd7b65c063f02ed67f1bac43a6771aa76016f44a26b1ecad
+- zUSD: https://goerli-2.voyager.online/contract/0x01838939e7b6c98b46a0a1ad0fcbeabad7fc28364b1f5a7ab6eedc48f6824326
+- VaultsManager: https://goerli-2.voyager.online/contract0x0208722b1af4c9d0d9d51ce85864d2976b1ec322fb10d056f1c2b539cc109448
